@@ -2,22 +2,6 @@ import streamlit as st
 import pandas as pd
 import urllib.parse
 
-# =========================
-# HIDE STREAMLIT HEADER
-# =========================
-hide_st_style = """
-<style>
-#MainMenu {visibility: hidden;}
-header {visibility: hidden;}
-footer {visibility: hidden;}
-.block-container {
-    padding-top: 1rem;
-    padding-bottom: 0rem;
-}
-</style>
-"""
-st.markdown(hide_st_style, unsafe_allow_html=True)
-
 st.set_page_config(page_title="राजहंस पुस्तक पेठ", layout="wide")
 
 # =========================
@@ -42,7 +26,7 @@ if "cart" not in st.session_state:
 # SIDEBAR (ORDER FORMAT UPDATED)
 # =========================
 with st.sidebar:
-    st.markdown("## राजहंस पुस्तक पेठ ")
+    st.markdown("## 🙏 नमस्कार 🙏")
     st.markdown("### 📚 आपण निवडलेली पुस्तके")
 
     total = 0
@@ -62,7 +46,7 @@ with st.sidebar:
             st.caption(f"{qty} x ₹{price} = ₹{subtotal}")
 
             total += subtotal
-            order_text += f"{sr}. {item_name} x {qty} = ₹{subtotal}\n"
+            order_text += f"{sr}. {item_name} x {qty} = ₹{subtotal}%0A"
             sr += 1
 
     if empty:
@@ -88,7 +72,7 @@ with st.sidebar:
 
         else:
             message = f"""
-  नमस्कार 🙏
+🙏 नमस्कार 🙏
 
 ऑर्डर:
 
@@ -112,7 +96,7 @@ Total: ₹{total}
 col1, col2 = st.columns([1,5])
 
 with col1:
-    st.image("logo.jpg", width=500)
+    st.image("logo.jpg", width=70)
 
 with col2:
     st.markdown("### 📚 राजहंस पुस्तक पेठ")

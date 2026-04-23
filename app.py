@@ -46,7 +46,7 @@ with st.sidebar:
             st.caption(f"{qty} x ₹{price} = ₹{subtotal}")
 
             total += subtotal
-            order_text += f"{sr}. {item_name} x {qty} = ₹{subtotal}%0A"
+            order_text += f"{sr}. {item_name} x {qty} = ₹{subtotal}\n"
             sr += 1
 
     if empty:

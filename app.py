@@ -1,21 +1,31 @@
 import streamlit as st
 import pandas as pd
-import numpy as np
 import pickle
 import urllib.parse
 
 st.set_page_config(page_title="राजहंस पुस्तक पेठ", layout="wide")
 
-st.title("📚 राजहंस पुस्तक पेठ - स्मार्ट बुक स्टोअर")
+st.title("📚 राजहंस पुस्तक पेठ")
 
 # =========================
-# LOAD DATA
+# LOAD DATA (FIXED)
 # =========================
 @st.cache_data
 def load_data():
-    return pd.read_csv("data.csv")
+    df = pd.read_csv("data.csv", encoding="utf-8-sig")
+    
+    # ✅ Clean column names
+    df.columns = df.columns.str.strip()
+    
+    # ✅ Remove unwanted columns
+    df = df.loc[:, ~df.columns.str.contains('^Unnamed')]
+    
+    return df
 
 df = load_data()
+
+# Debug (optional - first run)
+# st.write(df.columns)
 
 # =========================
 # CART SYSTEM
@@ -24,14 +34,16 @@ if "cart" not in st.session_state:
     st.session_state.cart = []
 
 # =========================
-# SEARCH
+# SEARCH (SAFE)
 # =========================
 search = st.text_input("🔎 पुस्तक शोधा")
 
 filtered = df.copy()
 
 if search:
-    filtered = filtered[filtered['पुस्तकाचे नाव'].str.contains(search, case=False)]
+    filtered = filtered[
+        filtered['पुस्तकाचे नाव'].astype(str).str.contains(search, case=False, na=False)
+    ]
 
 # =========================
 # BOOK DISPLAY
@@ -80,7 +92,7 @@ st.markdown(f"[📲 WhatsApp वर ऑर्डर करा]({url})")
 st.subheader("🔥 Combo Offer")
 
 if st.button("Generate Combo"):
-    combo = df.sample(3)
+    combo = df.sample(min(3, len(df)))
     combo_price = combo['सवलतीत'].sum()
 
     st.write(combo[['पुस्तकाचे नाव', 'सवलतीत']])
@@ -107,7 +119,8 @@ st.subheader("📥 Upload New Stock")
 file = st.file_uploader("Upload CSV")
 
 if file:
-    new_df = pd.read_csv(file)
+    new_df = pd.read_csv(file, encoding="utf-8-sig")
+    new_df.columns = new_df.columns.str.strip()
     st.write(new_df.head())
 
 # =========================
@@ -127,16 +140,3 @@ try:
 
 except:
     st.warning("Model load झाला नाही")
-
-
-
-
-import pandas as pd
-
-df = pd.read_csv("data.csv", encoding="utf-8-sig")
-
-# Remove extra spaces
-df.columns = df.columns.str.strip()
-
-# Access column
-print(df["पुस्तकाचे नाव"])

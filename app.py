@@ -26,7 +26,7 @@ if "cart" not in st.session_state:
 # SIDEBAR (ORDER FORMAT UPDATED)
 # =========================
 with st.sidebar:
-    st.markdown("## 🙏 नमस्कार 🙏")
+    st.markdown("## राजहंस पुस्तक पेठ")
     st.markdown("### 📚 आपण निवडलेली पुस्तके")
 
     total = 0
@@ -72,7 +72,7 @@ with st.sidebar:
 
         else:
             message = f"""
-🙏 नमस्कार 🙏
+ नमस्कार 🙏
 
 ऑर्डर:
 

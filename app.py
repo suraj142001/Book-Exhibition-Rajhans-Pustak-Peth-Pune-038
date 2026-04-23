@@ -10,7 +10,7 @@ st.set_page_config(page_title="राजहंस पुस्तक पेठ",
 col1, col2 = st.columns([1, 5])
 
 with col1:
-    st.image("logo.jpg", width=120)
+    st.image("logo.jpg", width=900)
 
 with col2:
     st.title("📚 राजहंस पुस्तक पेठ, पुणे ०३८")

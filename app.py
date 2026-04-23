@@ -73,21 +73,23 @@ for i, row in filtered.iterrows():
         st.write(f"🔥 ₹{row['सवलतीत']}")
 
     with col5:
-        c1, c2, c3 = st.columns([1,1,1])
+   qty = st.session_state.cart[name]["qty"]
 
-        with c1:
-            if st.button("➖", key=f"minus_{i}"):
-                if st.session_state.cart[name]["qty"] > 0:
-                    st.session_state.cart[name]["qty"] -= 1
+c1, c2, c3 = st.columns([1,1,1])
 
-        with c2:
-            st.write(st.session_state.cart[name]["qty"])
+with c1:
+    if st.button("➖", key=f"minus_{i}"):
+        if qty > 0:
+            st.session_state.cart[name]["qty"] -= 1
+            st.rerun()
 
-        with c3:
-            if st.button("➕", key=f"plus_{i}"):
-                st.session_state.cart[name]["qty"] += 1
+with c2:
+    st.markdown(f"### {st.session_state.cart[name]['qty']}")
 
-    st.divider()
+with c3:
+    if st.button("➕", key=f"plus_{i}"):
+        st.session_state.cart[name]["qty"] += 1
+        st.rerun()
 
 # =========================
 # CUSTOMER INFO

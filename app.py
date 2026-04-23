@@ -127,3 +127,16 @@ try:
 
 except:
     st.warning("Model load झाला नाही")
+
+
+
+
+import pandas as pd
+
+df = pd.read_csv("data.csv", encoding="utf-8-sig")
+
+# Remove extra spaces
+df.columns = df.columns.str.strip()
+
+# Access column
+print(df["पुस्तकाचे नाव"])

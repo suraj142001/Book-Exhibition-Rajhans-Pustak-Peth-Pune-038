@@ -26,7 +26,7 @@ if "cart" not in st.session_state:
 # SIDEBAR (ORDER FORMAT UPDATED)
 # =========================
 with st.sidebar:
-    st.markdown("## 🙏 नमस्कार 🙏")
+    st.markdown("## राजहंस पुस्तक पेठ ")
     st.markdown("### 📚 आपण निवडलेली पुस्तके")
 
     total = 0
@@ -72,7 +72,7 @@ with st.sidebar:
 
         else:
             message = f"""
-🙏 नमस्कार 🙏
+  नमस्कार 🙏
 
 ऑर्डर:
 
@@ -96,7 +96,7 @@ Total: ₹{total}
 col1, col2 = st.columns([1,5])
 
 with col1:
-    st.image("logo.jpg", width=70)
+    st.image("logo.jpg", width=500)
 
 with col2:
     st.markdown("### 📚 राजहंस पुस्तक पेठ")

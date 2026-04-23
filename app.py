@@ -10,7 +10,7 @@ st.set_page_config(page_title="राजहंस पुस्तक पेठ",
 col1, col2 = st.columns([1, 5])
 
 with col1:
-    st.image("logo.jpg", width=900)
+    st.image("logo.jpg", width=120)
 
 with col2:
     st.title("📚 राजहंस पुस्तक पेठ, पुणे ०३८")
@@ -29,10 +29,10 @@ def load_data():
 df = load_data()
 
 # =========================
-# CART (DICT FORMAT)
+# CART
 # =========================
 if "cart" not in st.session_state:
-    st.session_state.cart = {}   # {book_name: {data + qty}}
+    st.session_state.cart = {}
 
 # =========================
 # SEARCH
@@ -47,65 +47,78 @@ if search:
     ]
 
 # =========================
-# BOOK LIST
+# AUTHOR FILTER (NEW)
+# =========================
+authors = ["All"] + sorted(filtered['लेखक'].dropna().unique().tolist())
+selected_author = st.selectbox("✍️ लेखक निवडा", authors)
+
+if selected_author != "All":
+    filtered = filtered[filtered['लेखक'] == selected_author]
+
+# =========================
+# HEADER ROW (IMPORTANT)
 # =========================
 st.subheader("📚 उपलब्ध पुस्तके")
 
+h1, h2, h3, h4, h5 = st.columns([3,2,2,2,2])
+
+h1.markdown("**📖 पुस्तकाचे नाव**")
+h2.markdown("**✍️ लेखक**")
+h3.markdown("**💰 किंमत**")
+h4.markdown("**🔥 सवलतीत**")
+h5.markdown("**🛒 Qty**")
+
+st.divider()
+
+# =========================
+# BOOK LIST (COMPACT)
+# =========================
 for i, row in filtered.iterrows():
 
-    # Skip invalid
-    if pd.isna(row['पुस्तकाचे नाव']):
-        continue
-
     name = str(row['पुस्तकाचे नाव']).strip()
+
+    if not name:
+        continue
 
     if name not in st.session_state.cart:
         st.session_state.cart[name] = {"data": row, "qty": 0}
 
-    col1, col2, col3, col4, col5 = st.columns([3,2,2,2,2])
+    qty = st.session_state.cart[name]["qty"]
 
-    with col1:
-        st.write(f"📖 **{name}**")
+    c1, c2, c3, c4, c5 = st.columns([3,2,2,2,2])
 
-    with col2:
-        st.write(f"✍️ {row['लेखक']}")
+    c1.write(name)
+    c2.write(row['लेखक'])
+    c3.write(f"₹{row['किंमत']}")
+    c4.write(f"🔥 ₹{row['सवलतीत']}")
 
-    with col3:
-        st.write(f"₹{row['किंमत']}")
+    with c5:
+        b1, b2, b3 = st.columns([1,1,1])
 
-    with col4:
-        st.write(f"🔥 ₹{row['सवलतीत']}")
-
-    # ✅ FIXED BUTTON UI
-    with col5:
-        qty = st.session_state.cart[name]["qty"]
-
-        c1, c2, c3 = st.columns([1,1,1])
-
-        with c1:
+        with b1:
             if st.button("➖", key=f"minus_{i}"):
                 if qty > 0:
                     st.session_state.cart[name]["qty"] -= 1
                     st.rerun()
 
-        with c2:
-            st.markdown(f"### {st.session_state.cart[name]['qty']}")
+        with b2:
+            st.markdown(f"**{st.session_state.cart[name]['qty']}**")
 
-        with c3:
+        with b3:
             if st.button("➕", key=f"plus_{i}"):
                 st.session_state.cart[name]["qty"] += 1
                 st.rerun()
 
     st.divider()
+
 # =========================
 # CUSTOMER INFO
 # =========================
-st.subheader("🧾 तुमची माहिती")
-
-name_input = st.text_input("आपले नाव")
-phone_input = st.text_input("फोन नंबर")
-address_input = st.text_area("पत्ता")
-pincode_input = st.text_input("पिन कोड")
+with st.expander("🧾 तुमची माहिती भरा"):
+    name_input = st.text_input("आपले नाव")
+    phone_input = st.text_input("फोन नंबर")
+    address_input = st.text_area("पत्ता")
+    pincode_input = st.text_input("पिन कोड")
 
 # =========================
 # CART VIEW
@@ -130,7 +143,7 @@ for item_name, item in st.session_state.cart.items():
 st.success(f"Total: ₹{total}")
 
 # =========================
-# WHATSAPP ORDER (VALIDATION)
+# WHATSAPP ORDER
 # =========================
 phone = "919322630703"
 
@@ -161,26 +174,5 @@ Total: ₹{total}
         encoded_message = urllib.parse.quote(message)
         whatsapp_url = f"https://wa.me/{phone}?text={encoded_message}"
 
-        st.success("Redirecting to WhatsApp...")
-
+        st.success("✅ WhatsApp उघडत आहे...")
         st.markdown(f"[👉 इथे क्लिक करा]({whatsapp_url})")
-
-
-
-
-
-
-
-
-
-
-for i, row in filtered.iterrows():
-
-    name = str(row['पुस्तकाचे नाव'])
-
-    # ❌ skip invalid rows
-    if pd.isna(row['पुस्तकाचे नाव']):
-        continue
-
-    if name not in st.session_state.cart:
-        st.session_state.cart[name] = {"data": row, "qty": 0}

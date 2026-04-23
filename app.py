@@ -23,20 +23,20 @@ if "cart" not in st.session_state:
     st.session_state.cart = {}
 
 # =========================
-# HEADER + RIGHT PANEL
+# HEADER (COMPACT)
 # =========================
 left, right = st.columns([3,1])
 
 with left:
-    col1, col2 = st.columns([1,5])
-    with col1:
-        st.image("logo.jpg", width=100)
-    with col2:
-        st.title("📚 राजहंस पुस्तक पेठ, पुणे ०३८")
-        st.write("📞 9322630703")
+    c1, c2 = st.columns([1,6])
+    with c1:
+        st.image("logo.jpg", width=80)
+    with c2:
+        st.markdown("## 📚 राजहंस पुस्तक पेठ, पुणे ०३८")
+        st.markdown("📞 9322630703")
 
 with right:
-    st.markdown("### 🛒 तुमची ऑर्डर")
+    st.markdown("### 🛒 ऑर्डर")
 
     total = 0
     order_text = ""
@@ -50,49 +50,37 @@ with right:
             order_text += f"{item_name} x {qty} = ₹{subtotal}%0A"
             st.write(f"{item_name} x {qty}")
 
-    st.success(f"Total: ₹{total}")
+    st.success(f"₹{total}")
 
-    st.markdown("### 🧾 तुमची माहिती")
+    name_input = st.text_input("नाव", label_visibility="collapsed", placeholder="नाव")
+    phone_input = st.text_input("फोन", label_visibility="collapsed", placeholder="फोन")
+    address_input = st.text_area("पत्ता", label_visibility="collapsed", placeholder="पत्ता")
+    pincode_input = st.text_input("पिनकोड", label_visibility="collapsed", placeholder="पिनकोड")
 
-    name_input = st.text_input("नाव")
-    phone_input = st.text_input("फोन")
-    address_input = st.text_area("पत्ता")
-    pincode_input = st.text_input("पिनकोड")
-
-    if st.button("📲 WhatsApp Order"):
-
+    if st.button("📲 ऑर्डर करा"):
         if not name_input or not phone_input or not address_input or not pincode_input:
-            st.error("⚠️ सर्व माहिती भरा")
-
+            st.error("माहिती भरा")
         elif total == 0:
-            st.error("⚠️ पुस्तक निवडा")
-
+            st.error("पुस्तक निवडा")
         else:
-            message = f"""
-नमस्कार,
-
+            msg = f"""
 नाव: {name_input}
 फोन: {phone_input}
 पत्ता: {address_input}
 पिनकोड: {pincode_input}
 
-मला खालील पुस्तके हवी आहेत:
-
 {order_text}
-
 Total: ₹{total}
 """
-            encoded = urllib.parse.quote(message)
-            url = f"https://wa.me/919322630703?text={encoded}"
-
-            st.markdown(f"[👉 WhatsApp उघडा]({url})")
+            url = f"https://wa.me/919322630703?text={urllib.parse.quote(msg)}"
+            st.markdown(f"[👉 WhatsApp]({url})")
 
 # =========================
 # SEARCH + FILTER
 # =========================
 st.divider()
 
-search = st.text_input("🔎 पुस्तक शोधा")
+search = st.text_input("🔎 शोधा", placeholder="पुस्तकाचे नाव टाका")
 
 filtered = df.copy()
 
@@ -101,18 +89,12 @@ if search:
         filtered['पुस्तकाचे नाव'].astype(str).str.contains(search, case=False, na=False)
     ]
 
-authors = ["All"] + sorted(filtered['लेखक'].dropna().unique().tolist())
-selected_author = st.selectbox("✍️ लेखक निवडा", authors)
-
-if selected_author != "All":
-    filtered = filtered[filtered['लेखक'] == selected_author]
-
 # =========================
-# AMAZON STYLE CARDS
+# BOOK CARDS (COMPACT GRID)
 # =========================
-st.subheader("📚 उपलब्ध पुस्तके")
+st.markdown("### 📚 पुस्तके")
 
-cols = st.columns(3)
+cols = st.columns(4)  # 👉 4 per row = less scroll
 
 for i, row in filtered.iterrows():
 
@@ -125,32 +107,25 @@ for i, row in filtered.iterrows():
 
     qty = st.session_state.cart[name]["qty"]
 
-    with cols[i % 3]:
+    with cols[i % 4]:
 
-        st.markdown("----")
+        st.markdown(f"**{name}**")
+        st.caption(row['लेखक'])
 
-        # 📸 Placeholder Image
-        st.image("https://via.placeholder.com/150", use_container_width=True)
-
-        st.markdown(f"### {name}")
-        st.write(f"✍️ {row['लेखक']}")
-
-        st.markdown(f"~~₹{row['किंमत']}~~  🔥 **₹{row['सवलतीत']}**")
-
-        st.write("⭐⭐⭐⭐☆")
+        st.markdown(f"~~₹{row['किंमत']}~~  **₹{row['सवलतीत']}**")
 
         c1, c2, c3 = st.columns([1,1,1])
 
         with c1:
-            if st.button("➖", key=f"minus_{i}"):
+            if st.button("➖", key=f"m{i}"):
                 if qty > 0:
                     st.session_state.cart[name]["qty"] -= 1
                     st.rerun()
 
         with c2:
-            st.markdown(f"### {st.session_state.cart[name]['qty']}")
+            st.markdown(f"**{st.session_state.cart[name]['qty']}**")
 
         with c3:
-            if st.button("➕", key=f"plus_{i}"):
+            if st.button("➕", key=f"p{i}"):
                 st.session_state.cart[name]["qty"] += 1
                 st.rerun()

@@ -2,7 +2,7 @@
 # =========================
 # AMAZON STYLE BOOK CARDS
 # =========================
-st.subheader("📚 उपलब्ध पुस्तके")
+st.subheader("📚उपलब्ध पुस्तके")
 
 cols = st.columns(3)  # 3 cards per row
 

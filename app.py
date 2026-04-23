@@ -156,3 +156,23 @@ Total: ₹{total}
         st.success("Redirecting to WhatsApp...")
 
         st.markdown(f"[👉 इथे क्लिक करा]({whatsapp_url})")
+
+
+
+
+
+
+
+
+
+
+for i, row in filtered.iterrows():
+
+    name = str(row['पुस्तकाचे नाव'])
+
+    # ❌ skip invalid rows
+    if pd.isna(row['पुस्तकाचे नाव']):
+        continue
+
+    if name not in st.session_state.cart:
+        st.session_state.cart[name] = {"data": row, "qty": 0}

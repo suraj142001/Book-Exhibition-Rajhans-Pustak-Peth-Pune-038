@@ -23,69 +23,60 @@ if "cart" not in st.session_state:
     st.session_state.cart = {}
 
 # =========================
-# SIDEBAR (UPDATED)
+# SIDEBAR (MOBILE FRIENDLY)
 # =========================
 with st.sidebar:
-
-    st.title("🛒 आपण निवडलेली पुस्तके")
+    st.markdown("## 📚 आपण निवडलेली पुस्तके")
 
     total = 0
     order_text = ""
 
-    has_items = False
+    empty = True
 
     for item_name, item in st.session_state.cart.items():
         qty = item["qty"]
 
         if qty > 0:
-            has_items = True
+            empty = False
             price = item["data"]['सवलतीत']
             subtotal = price * qty
 
-            st.write(f"📖 {item_name}")
+            st.markdown(f"**{item_name}**")
             st.caption(f"{qty} x ₹{price} = ₹{subtotal}")
 
             total += subtotal
             order_text += f"{item_name} x {qty} = ₹{subtotal}%0A"
 
-    if not has_items:
+    if empty:
         st.info("अजून पुस्तक निवडलेले नाही")
 
     st.divider()
-    st.success(f"Total: ₹{total}")
 
-    # =========================
-    # CUSTOMER INFO
-    # =========================
+    st.success(f"एकूण: ₹{total}")
+
     st.markdown("### 🧾 तुमची माहिती")
 
     name_input = st.text_input("नाव")
-    phone_input = st.text_input("फोन")
+    phone_input = st.text_input("फोन नंबर")
     address_input = st.text_area("पत्ता")
-    pincode_input = st.text_input("पिनकोड")
+    pincode_input = st.text_input("पिन कोड")
 
-    # =========================
-    # WHATSAPP ORDER
-    # =========================
     if st.button("📲 WhatsApp वर ऑर्डर करा"):
 
         if not name_input or not phone_input or not address_input or not pincode_input:
-            st.error("⚠️ कृपया सर्व माहिती भरा")
+            st.error("कृपया सर्व माहिती भरा")
 
         elif total == 0:
-            st.error("⚠️ कृपया किमान एक पुस्तक निवडा")
+            st.error("किमान एक पुस्तक निवडा")
 
         else:
             message = f"""
-नमस्कार,
-
 नाव: {name_input}
 फोन: {phone_input}
 पत्ता: {address_input}
 पिनकोड: {pincode_input}
 
-मला खालील पुस्तके हवी आहेत:
-
+ऑर्डर:
 {order_text}
 
 Total: ₹{total}
@@ -93,8 +84,7 @@ Total: ₹{total}
 
             url = f"https://wa.me/919322630703?text={urllib.parse.quote(message)}"
 
-            st.success("👉 खाली क्लिक करा")
-            st.markdown(f"[📲 WhatsApp उघडा]({url})")
+            st.markdown(f"[👉 WhatsApp उघडा]({url})")
 
 # =========================
 # HEADER
@@ -102,7 +92,7 @@ Total: ₹{total}
 col1, col2 = st.columns([1,5])
 
 with col1:
-    st.image("logo.jpg", width=70)
+    st.image("logo.jpg", width=600)
 
 with col2:
     st.markdown("### 📚 राजहंस पुस्तक पेठ")
@@ -111,7 +101,7 @@ with col2:
 # =========================
 # SEARCH
 # =========================
-search = st.text_input("🔎 शोधा")
+search = st.text_input("🔎 पुस्तक शोधा")
 
 filtered = df.copy()
 
@@ -177,7 +167,7 @@ for i, row in page_data.iterrows():
     st.divider()
 
 # =========================
-# PAGINATION BOTTOM
+# PAGINATION BUTTONS (BOTTOM)
 # =========================
 col1, col2, col3 = st.columns([1,2,1])
 

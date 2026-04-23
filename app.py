@@ -7,15 +7,66 @@ st.set_page_config(page_title="राजहंस पुस्तक पेठ",
 # =========================
 # HEADER
 # =========================
-col1, col2 = st.columns([1, 5])
+left, right = st.columns([3, 2])
 
-with col1:
-    st.image("logo.jpg", width=900)
+with left:
+    col1, col2 = st.columns([1,5])
+    with col1:
+        st.image("logo.jpg", width=100)
+    with col2:
+        st.title("📚 राजहंस पुस्तक पेठ, पुणे ०३८")
+        st.write("📞 9322630703")
 
-with col2:
-    st.title("📚 राजहंस पुस्तक पेठ, पुणे ०३८")
-    st.write("📞 9322630703")
+with right:
+    st.markdown("### 🧾 तुमची माहिती")
 
+    name_input = st.text_input("नाव", key="name")
+    phone_input = st.text_input("फोन", key="phone")
+    address_input = st.text_area("पत्ता", key="address")
+    pincode_input = st.text_input("पिनकोड", key="pincode")
+
+    # WhatsApp button (top right)
+    if st.button("📲 WhatsApp वर ऑर्डर करा", key="top_btn"):
+        
+        total = 0
+        order_text = ""
+
+        for item_name, item in st.session_state.cart.items():
+            qty = item["qty"]
+            if qty > 0:
+                price = item["data"]['सवलतीत']
+                subtotal = price * qty
+                total += subtotal
+                order_text += f"{item_name} x {qty} = ₹{subtotal}%0A"
+
+        if not name_input or not phone_input or not address_input or not pincode_input:
+            st.error("⚠️ सर्व माहिती भरा")
+        
+        elif total == 0:
+            st.error("⚠️ पुस्तक निवडा")
+        
+        else:
+            message = f"""
+नमस्कार,
+
+नाव: {name_input}
+फोन: {phone_input}
+पत्ता: {address_input}
+पिनकोड: {pincode_input}
+
+मला खालील पुस्तके हवी आहेत:
+
+{order_text}
+
+Total: ₹{total}
+"""
+
+            import urllib.parse
+            encoded_message = urllib.parse.quote(message)
+
+            url = f"https://wa.me/919322630703?text={encoded_message}"
+
+            st.markdown(f"[👉 WhatsApp उघडा]({url})")
 # =========================
 # LOAD DATA
 # =========================

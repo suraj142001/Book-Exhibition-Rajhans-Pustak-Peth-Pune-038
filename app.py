@@ -23,7 +23,7 @@ if "cart" not in st.session_state:
     st.session_state.cart = {}
 
 # =========================
-# SIDEBAR (BEST FOR MOBILE)
+# SIDEBAR (ORDER)
 # =========================
 with st.sidebar:
     st.title("🛒 ऑर्डर")
@@ -90,18 +90,22 @@ if search:
     ]
 
 # =========================
-# PAGINATION (VERY IMPORTANT)
+# PAGINATION SETUP
 # =========================
 items_per_page = 8
-page = st.number_input("Page", min_value=1, step=1)
 
-start = (page - 1) * items_per_page
+if "page" not in st.session_state:
+    st.session_state.page = 1
+
+total_pages = max(1, (len(filtered) - 1) // items_per_page + 1)
+
+start = (st.session_state.page - 1) * items_per_page
 end = start + items_per_page
 
 page_data = filtered.iloc[start:end]
 
 # =========================
-# COMPACT LIST (LOW SCROLL)
+# BOOK LIST
 # =========================
 st.markdown("### 📚 पुस्तके")
 
@@ -126,8 +130,37 @@ for i, row in page_data.iterrows():
         st.write(f"Qty: {qty}")
 
     with col3:
-        if st.button("➕", key=f"p{i}"):
-            st.session_state.cart[name]["qty"] += 1
-            st.rerun()
+        c1, c2 = st.columns(2)
+
+        with c1:
+            if st.button("➖", key=f"m{i}"):
+                if qty > 0:
+                    st.session_state.cart[name]["qty"] -= 1
+                    st.rerun()
+
+        with c2:
+            if st.button("➕", key=f"p{i}"):
+                st.session_state.cart[name]["qty"] += 1
+                st.rerun()
 
     st.divider()
+
+# =========================
+# BOTTOM PAGINATION (IMPORTANT)
+# =========================
+col1, col2, col3 = st.columns([1,2,1])
+
+with col1:
+    if st.button("⬅️ मागे"):
+        if st.session_state.page > 1:
+            st.session_state.page -= 1
+            st.rerun()
+
+with col2:
+    st.markdown(f"### Page {st.session_state.page} / {total_pages}")
+
+with col3:
+    if st.button("पुढे ➡️"):
+        if st.session_state.page < total_pages:
+            st.session_state.page += 1
+            st.rerun()

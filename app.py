@@ -53,7 +53,11 @@ st.subheader("📚 उपलब्ध पुस्तके")
 
 for i, row in filtered.iterrows():
 
-    name = row['पुस्तकाचे नाव']
+    # Skip invalid
+    if pd.isna(row['पुस्तकाचे नाव']):
+        continue
+
+    name = str(row['पुस्तकाचे नाव']).strip()
 
     if name not in st.session_state.cart:
         st.session_state.cart[name] = {"data": row, "qty": 0}
@@ -72,25 +76,27 @@ for i, row in filtered.iterrows():
     with col4:
         st.write(f"🔥 ₹{row['सवलतीत']}")
 
+    # ✅ FIXED BUTTON UI
     with col5:
-   qty = st.session_state.cart[name]["qty"]
+        qty = st.session_state.cart[name]["qty"]
 
-c1, c2, c3 = st.columns([1,1,1])
+        c1, c2, c3 = st.columns([1,1,1])
 
-with c1:
-    if st.button("➖", key=f"minus_{i}"):
-        if qty > 0:
-            st.session_state.cart[name]["qty"] -= 1
-            st.rerun()
+        with c1:
+            if st.button("➖", key=f"minus_{i}"):
+                if qty > 0:
+                    st.session_state.cart[name]["qty"] -= 1
+                    st.rerun()
 
-with c2:
-    st.markdown(f"### {st.session_state.cart[name]['qty']}")
+        with c2:
+            st.markdown(f"### {st.session_state.cart[name]['qty']}")
 
-with c3:
-    if st.button("➕", key=f"plus_{i}"):
-        st.session_state.cart[name]["qty"] += 1
-        st.rerun()
+        with c3:
+            if st.button("➕", key=f"plus_{i}"):
+                st.session_state.cart[name]["qty"] += 1
+                st.rerun()
 
+    st.divider()
 # =========================
 # CUSTOMER INFO
 # =========================

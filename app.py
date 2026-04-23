@@ -2,6 +2,22 @@ import streamlit as st
 import pandas as pd
 import urllib.parse
 
+# =========================
+# HIDE STREAMLIT HEADER
+# =========================
+hide_st_style = """
+<style>
+#MainMenu {visibility: hidden;}
+header {visibility: hidden;}
+footer {visibility: hidden;}
+.block-container {
+    padding-top: 1rem;
+    padding-bottom: 0rem;
+}
+</style>
+"""
+st.markdown(hide_st_style, unsafe_allow_html=True)
+
 st.set_page_config(page_title="राजहंस पुस्तक पेठ", layout="wide")
 
 # =========================

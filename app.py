@@ -2,6 +2,10 @@
 # =========================
 # AMAZON STYLE BOOK CARDS
 # =========================
+import streamlit as st
+import pandas as pd
+import urllib.parse
+
 st.subheader("📚उपलब्ध पुस्तके")
 
 cols = st.columns(3)  # 3 cards per row

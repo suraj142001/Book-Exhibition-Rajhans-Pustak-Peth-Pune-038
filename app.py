@@ -17,37 +17,16 @@ def load_data():
 df = load_data()
 
 # =========================
-# SESSION CART
+# CART
 # =========================
 if "cart" not in st.session_state:
     st.session_state.cart = {}
 
 # =========================
-# HEADER (COMPACT)
+# SIDEBAR (BEST FOR MOBILE)
 # =========================
-top1, top2 = st.columns([4,1])
-
-with top1:
-    c1, c2 = st.columns([1,8])
-    with c1:
-        st.image("logo.jpg", width=70)
-    with c2:
-        st.markdown("### 📚 राजहंस पुस्तक पेठ, पुणे ०३८")
-        st.caption("📞 9322630703")
-
-with top2:
-    st.markdown("### 🛒")
-
-# =========================
-# MAIN + RIGHT PANEL
-# =========================
-main, side = st.columns([4,1])
-
-# =========================
-# RIGHT SIDE (ORDER PANEL)
-# =========================
-with side:
-    st.markdown("### तुमची ऑर्डर")
+with st.sidebar:
+    st.title("🛒 ऑर्डर")
 
     total = 0
     order_text = ""
@@ -87,62 +66,68 @@ Total: ₹{total}
             st.markdown(f"[👉 WhatsApp]({url})")
 
 # =========================
-# MAIN AREA
+# HEADER
 # =========================
-with main:
+col1, col2 = st.columns([1,5])
 
-    # SEARCH
-    search = st.text_input("🔎 शोधा", placeholder="पुस्तकाचे नाव")
+with col1:
+    st.image("logo.jpg", width=70)
 
-    filtered = df.copy()
+with col2:
+    st.markdown("### 📚 राजहंस पुस्तक पेठ")
+    st.caption("📞 9322630703")
 
-    if search:
-        filtered = filtered[
-            filtered['पुस्तकाचे नाव'].astype(str).str.contains(search, case=False, na=False)
-        ]
+# =========================
+# SEARCH
+# =========================
+search = st.text_input("🔎 शोधा")
 
-    # AUTHOR FILTER
-    authors = ["All"] + sorted(filtered['लेखक'].dropna().unique().tolist())
-    selected_author = st.selectbox("लेखक", authors)
+filtered = df.copy()
 
-    if selected_author != "All":
-        filtered = filtered[filtered['लेखक'] == selected_author]
+if search:
+    filtered = filtered[
+        filtered['पुस्तकाचे नाव'].astype(str).str.contains(search, case=False, na=False)
+    ]
 
-    st.markdown("### 📚 पुस्तके")
+# =========================
+# PAGINATION (VERY IMPORTANT)
+# =========================
+items_per_page = 8
+page = st.number_input("Page", min_value=1, step=1)
 
-    # GRID (LESS SCROLL)
-    cols = st.columns(4)
+start = (page - 1) * items_per_page
+end = start + items_per_page
 
-    for i, row in filtered.iterrows():
+page_data = filtered.iloc[start:end]
 
-        name = str(row['पुस्तकाचे नाव']).strip()
-        if not name:
-            continue
+# =========================
+# COMPACT LIST (LOW SCROLL)
+# =========================
+st.markdown("### 📚 पुस्तके")
 
-        if name not in st.session_state.cart:
-            st.session_state.cart[name] = {"data": row, "qty": 0}
+for i, row in page_data.iterrows():
 
-        qty = st.session_state.cart[name]["qty"]
+    name = str(row['पुस्तकाचे नाव']).strip()
+    if not name:
+        continue
 
-        with cols[i % 4]:
+    if name not in st.session_state.cart:
+        st.session_state.cart[name] = {"data": row, "qty": 0}
 
-            st.markdown(f"**{name}**")
-            st.caption(row['लेखक'])
+    qty = st.session_state.cart[name]["qty"]
 
-            st.markdown(f"~~₹{row['किंमत']}~~  **₹{row['सवलतीत']}**")
+    col1, col2, col3 = st.columns([5,2,2])
 
-            c1, c2, c3 = st.columns([1,1,1])
+    with col1:
+        st.write(f"**{name}**")
+        st.caption(f"{row['लेखक']} | ₹{row['किंमत']} → ₹{row['सवलतीत']}")
 
-            with c1:
-                if st.button("➖", key=f"m{i}"):
-                    if qty > 0:
-                        st.session_state.cart[name]["qty"] -= 1
-                        st.rerun()
+    with col2:
+        st.write(f"Qty: {qty}")
 
-            with c2:
-                st.markdown(f"**{st.session_state.cart[name]['qty']}**")
+    with col3:
+        if st.button("➕", key=f"p{i}"):
+            st.session_state.cart[name]["qty"] += 1
+            st.rerun()
 
-            with c3:
-                if st.button("➕", key=f"p{i}"):
-                    st.session_state.cart[name]["qty"] += 1
-                    st.rerun()
+    st.divider()

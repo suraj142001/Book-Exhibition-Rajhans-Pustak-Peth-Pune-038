@@ -23,68 +23,47 @@ if "cart" not in st.session_state:
     st.session_state.cart = {}
 
 # =========================
-# SIDEBAR (MOBILE FRIENDLY)
+# SIDEBAR (ORDER)
 # =========================
 with st.sidebar:
-    st.markdown("## 📚 आपण निवडलेली पुस्तके")
+    st.title("🛒 ऑर्डर")
 
     total = 0
     order_text = ""
 
-    empty = True
-
     for item_name, item in st.session_state.cart.items():
         qty = item["qty"]
-
         if qty > 0:
-            empty = False
             price = item["data"]['सवलतीत']
             subtotal = price * qty
-
-            st.markdown(f"**{item_name}**")
-            st.caption(f"{qty} x ₹{price} = ₹{subtotal}")
-
             total += subtotal
             order_text += f"{item_name} x {qty} = ₹{subtotal}%0A"
+            st.write(f"{item_name} x {qty}")
 
-    if empty:
-        st.info("अजून पुस्तक निवडलेले नाही")
-
-    st.divider()
-
-    st.success(f"एकूण: ₹{total}")
-
-    st.markdown("### 🧾 तुमची माहिती")
+    st.success(f"₹{total}")
 
     name_input = st.text_input("नाव")
-    phone_input = st.text_input("फोन नंबर")
+    phone_input = st.text_input("फोन")
     address_input = st.text_area("पत्ता")
-    pincode_input = st.text_input("पिन कोड")
+    pincode_input = st.text_input("पिनकोड")
 
-    if st.button("📲 WhatsApp वर ऑर्डर करा"):
-
+    if st.button("📲 ऑर्डर करा"):
         if not name_input or not phone_input or not address_input or not pincode_input:
-            st.error("कृपया सर्व माहिती भरा")
-
+            st.error("माहिती भरा")
         elif total == 0:
-            st.error("किमान एक पुस्तक निवडा")
-
+            st.error("पुस्तक निवडा")
         else:
-            message = f"""
+            msg = f"""
 नाव: {name_input}
 फोन: {phone_input}
 पत्ता: {address_input}
 पिनकोड: {pincode_input}
 
-ऑर्डर:
 {order_text}
-
 Total: ₹{total}
 """
-
-            url = f"https://wa.me/919322630703?text={urllib.parse.quote(message)}"
-
-            st.markdown(f"[👉 WhatsApp उघडा]({url})")
+            url = f"https://wa.me/919322630703?text={urllib.parse.quote(msg)}"
+            st.markdown(f"[👉 WhatsApp]({url})")
 
 # =========================
 # HEADER
@@ -92,7 +71,7 @@ Total: ₹{total}
 col1, col2 = st.columns([1,5])
 
 with col1:
-    st.image("logo.jpg", width=600)
+    st.image("logo.jpg", width=500)
 
 with col2:
     st.markdown("### 📚 राजहंस पुस्तक पेठ")
@@ -101,7 +80,7 @@ with col2:
 # =========================
 # SEARCH
 # =========================
-search = st.text_input("🔎 पुस्तक शोधा")
+search = st.text_input("🔎 शोधा")
 
 filtered = df.copy()
 
@@ -111,14 +90,14 @@ if search:
     ]
 
 # =========================
-# PAGINATION
+# PAGINATION SETUP
 # =========================
 items_per_page = 8
 
 if "page" not in st.session_state:
     st.session_state.page = 1
 
-total_pages = max(1, (len(filtered)-1)//items_per_page + 1)
+total_pages = max(1, (len(filtered) - 1) // items_per_page + 1)
 
 start = (st.session_state.page - 1) * items_per_page
 end = start + items_per_page
@@ -167,7 +146,7 @@ for i, row in page_data.iterrows():
     st.divider()
 
 # =========================
-# PAGINATION BUTTONS (BOTTOM)
+# BOTTOM PAGINATION (IMPORTANT)
 # =========================
 col1, col2, col3 = st.columns([1,2,1])
 

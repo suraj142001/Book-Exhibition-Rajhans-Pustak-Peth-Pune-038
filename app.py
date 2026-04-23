@@ -71,10 +71,10 @@ Total: ₹{total}
 col1, col2 = st.columns([1,5])
 
 with col1:
-    st.image("logo.jpg", width=70)
+    st.image("logo.jpg", width=500)
 
 with col2:
-    st.markdown("### 📚 राजहंस पुस्तक पेठ")
+    st.markdown("### 📚 राजहंस पुस्तक पेठ,पुणे ०३८ - पुस्तक प्रदर्शन!")
     st.caption("📞 9322630703")
 
 # =========================

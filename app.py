@@ -5,29 +5,41 @@ import urllib.parse
 st.set_page_config(page_title="राजहंस पुस्तक पेठ", layout="wide")
 
 # =========================
-# LOAD DATA
+# LOAD DATA (FIXED)
 # =========================
 @st.cache_data
 def load_data():
     df = pd.read_csv("data.csv", encoding="utf-8-sig")
+
+    # Clean columns
     df.columns = df.columns.str.strip()
     df = df.loc[:, ~df.columns.str.contains('^Unnamed')]
+
+    # 🔥 IMPORTANT FIX (TypeError Solution)
+    df['किंमत'] = pd.to_numeric(df['किंमत'], errors='coerce')
+    df['सवलतीत'] = pd.to_numeric(df['सवलतीत'], errors='coerce')
+
+    df = df.fillna(0)
+
     return df
 
 df = load_data()
 
 # =========================
-# CART
+# SESSION CART
 # =========================
 if "cart" not in st.session_state:
     st.session_state.cart = {}
 
+if "page" not in st.session_state:
+    st.session_state.page = 1
+
 # =========================
-# SIDEBAR (ORDER FORMAT UPDATED)
+# SIDEBAR (ORDER)
 # =========================
 with st.sidebar:
-    st.markdown("## राजहंस पुस्तक पेठ")
-    st.markdown("### 📚 आपण निवडलेली पुस्तके")
+    st.markdown("## 🏪 राजहंस पुस्तक पेठ")
+    st.markdown("### 📚 निवडलेली पुस्तके")
 
     total = 0
     order_text = ""
@@ -39,23 +51,27 @@ with st.sidebar:
 
         if qty > 0:
             empty = False
-            price = item["data"]['सवलतीत']
+
+            price = float(item["data"]['सवलतीत'])
             subtotal = price * qty
 
             st.markdown(f"{sr}. **{item_name}**")
-            st.caption(f"{qty} x ₹{price} = ₹{subtotal}")
+            st.caption(f"{qty} x ₹{int(price)} = ₹{int(subtotal)}")
 
             total += subtotal
-            order_text += f"{sr}. {item_name} x {qty} = ₹{subtotal}\n"
+            order_text += f"{sr}. {item_name} x {qty} = ₹{int(subtotal)}\n"
             sr += 1
 
     if empty:
         st.info("अजून पुस्तक निवडलेले नाही")
 
     st.divider()
-    st.success(f"एकूण: ₹{total}")
+    st.success(f"एकूण: ₹{int(total)}")
 
-    st.markdown("### 🧾 ऑर्डर")
+    # =========================
+    # CUSTOMER DETAILS
+    # =========================
+    st.markdown("### 🧾 ऑर्डर तपशील")
 
     name_input = st.text_input("नाव")
     phone_input = st.text_input("फोन")
@@ -72,19 +88,17 @@ with st.sidebar:
 
         else:
             message = f"""
- नमस्कार 🙏
-
-ऑर्डर:
+नमस्कार 🙏
 
 नाव: {name_input}
 फोन: {phone_input}
 पत्ता: {address_input}
 पिनकोड: {pincode_input}
 
-पुस्तके:
+📚 ऑर्डर:
 {order_text}
 
-Total: ₹{total}
+एकूण: ₹{int(total)}
 """
 
             url = f"https://wa.me/919322630703?text={urllib.parse.quote(message)}"
@@ -96,10 +110,10 @@ Total: ₹{total}
 col1, col2 = st.columns([1,5])
 
 with col1:
-    st.image("logo.jpg", width=300)
+    st.image("logo.jpg", width=500)
 
 with col2:
-    st.markdown("### 📚 राजहंस पुस्तक पेठ")
+    st.markdown("## 📚 राजहंस पुस्तक पेठ")
     st.caption("📞 9322630703")
 
 # =========================
@@ -118,10 +132,6 @@ if search:
 # PAGINATION
 # =========================
 items_per_page = 8
-
-if "page" not in st.session_state:
-    st.session_state.page = 1
-
 total_pages = max(1, (len(filtered)-1)//items_per_page + 1)
 
 start = (st.session_state.page - 1) * items_per_page
@@ -149,7 +159,7 @@ for i, row in page_data.iterrows():
 
     with col1:
         st.write(f"**{name}**")
-        st.caption(f"{row['लेखक']} | ₹{row['किंमत']} → ₹{row['सवलतीत']}")
+        st.caption(f"{row['लेखक']} | ₹{int(row['किंमत'])} → ₹{int(row['सवलतीत'])}")
 
     with col2:
         st.write(f"Qty: {qty}")

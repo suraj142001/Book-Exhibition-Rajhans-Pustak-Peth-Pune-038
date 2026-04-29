@@ -11,19 +11,20 @@ st.set_page_config(page_title="राजहंस पुस्तक पेठ",
 def load_data():
     df = pd.read_csv("data.csv", encoding="utf-8-sig")
 
-    # Clean columns
-    df.columns = df.columns.str.strip()
-    df = df.loc[:, ~df.columns.str.contains('^Unnamed')]
+    # 🔥 FULL CLEAN (ULTRA IMPORTANT)
+    df.columns = df.columns.str.strip()  # remove spaces
+    df.columns = df.columns.str.replace('\ufeff', '')  # remove BOM
 
-    # 🔥 IMPORTANT FIX (TypeError Solution)
-    df['किंमत'] = pd.to_numeric(df['किंमत'], errors='coerce')
-    df['सवलतीत'] = pd.to_numeric(df['सवलतीत'], errors='coerce')
+    # DEBUG (एकदा चालव)
+    st.write("Columns:", df.columns.tolist())
+
+    # Convert safely
+    df['किंमत'] = pd.to_numeric(df.get('किंमत'), errors='coerce')
+    df['सवलतीत'] = pd.to_numeric(df.get('सवलतीत'), errors='coerce')
 
     df = df.fillna(0)
 
     return df
-
-df = load_data()
 
 # =========================
 # SESSION CART
